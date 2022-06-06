@@ -1,5 +1,5 @@
 const config = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 5000,
   jwtSecret: process.env.JWT_SECRET || "YOUR_SECRET_KEY",
   postgresUri:
     process.env.POSTGRES_URI ||
