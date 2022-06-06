@@ -4,6 +4,7 @@ import crypto from "crypto";
 
 class User extends Model {
   constructor() {
+    super();
     this._password = "";
     this.salt = "";
   }
@@ -94,3 +95,8 @@ User.init(
 
 // the defined model is the class itself
 // console.log(User === sequelize.models.User); // true
+(async () => {
+  await sequelize.sync({ alter: true });
+})();
+
+export default User;
