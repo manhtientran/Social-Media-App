@@ -3,12 +3,6 @@ import { Sequelize, DataTypes, Model } from "sequelize";
 import crypto from "crypto";
 
 class User extends Model {
-  constructor() {
-    super();
-    this._password = "";
-    this.salt = "";
-  }
-
   authenticate(plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   }
@@ -49,12 +43,12 @@ User.init(
       is: /.+\@.+\..+/,
       allowNull: false,
     },
-    created: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.NOW,
-    },
-    updated: Sequelize.DATE,
+    // created: {
+    //   type: Sequelize.DATE,
+    //   allowNull: false,
+    //   defaultValue: Sequelize.NOW,
+    // },
+    // updated: Sequelize.DATE,
     hashed_password: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -64,13 +58,13 @@ User.init(
       type: DataTypes.VIRTUAL,
       validate: {
         is_long_enough() {
-          if (this._password.length < 7) {
+          if (this.password.length < 7) {
             throw new Error("Please choose a longer password");
           }
         },
 
         is_required() {
-          if (!this._password) {
+          if (!this.password) {
             throw new Error("Password is required");
           }
         },

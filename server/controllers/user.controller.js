@@ -4,7 +4,10 @@ import lodash from "lodash";
 const create = async (req, res) => {
   try {
     const user = await User.create(req.body);
-    return res.status(200).json({ message: "Successfully signed up!" });
+    user.password = undefined;
+    user.salt = undefined;
+    user.hashed_password = undefined;
+    return res.status(200).json(user);
   } catch (error) {
     return res.status(400).json({
       message: error.message,
@@ -14,17 +17,18 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    let users = User.findAll({
-      attributes: ["name", "email", "updated", "created"],
+    let users = await User.findAll({
+      attributes: ["id", "name", "email", "updatedAt", "createdAt"],
     });
     res.json(users);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
 };
+
 const userByID = async (req, res, next, id) => {
   try {
-    let user = await User.findAll({
+    let user = await User.findOne({
       where: {
         id: id,
       },
@@ -48,11 +52,13 @@ const update = async (req, res) => {
   try {
     let user = req.profile;
     user = lodash.extend(user, req.body);
-    user.updated = Date.now();
+    user.updatedAt = Date.now();
     await user.save();
+
+    user.password = undefined;
     user.hashed_password = undefined;
     user.salt = undefined;
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -61,9 +67,12 @@ const remove = async (req, res) => {
   try {
     let user = req.profile;
     let deletedUser = await User.destroy({ where: { id: user.id } });
-    deletedUser.hashed_password = undefined;
-    deletedUser.salt = undefined;
-    res.json(deletedUser);
+
+    user.password = undefined;
+    user.hashed_password = undefined;
+    user.salt = undefined;
+
+    return res.json(user);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
